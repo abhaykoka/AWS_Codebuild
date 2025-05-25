@@ -1,0 +1,15 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.8
+    commands:
+      - echo "Installing dependencies..."
+  build:
+    commands:
+      - echo "Running Python script..."
+      - python hello.py
+  post_build:
+    commands:
+      - echo "Build completed successfully!"
