@@ -1,30 +1,22 @@
-version: 0.2
+import boto3
 
-env:
-  variables:
-    AWS_REGION: us-east-1
-    REPOSITORY_URI: 123456789012.dkr.ecr.us-east-1.amazonaws.com/my-repo
+codebuild = boto3.client('codebuild')
 
-phases:
-  pre_build:
-    commands:
-      - echo Logging in to Amazon ECR...
-      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $REPOSITORY_URI
-      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-      - echo Image tag: $IMAGE_TAG
+response = codebuild.create_project(
+    name='SimpleBuildProject',
+    source={
+        'type': 'GITHUB',
+        'location': 'https://github.com/your-username/your-repo',
+    },
+    artifacts={
+        'type': 'NO_ARTIFACTS'
+    },
+    environment={
+        'type': 'LINUX_CONTAINER',
+        'image': 'aws/codebuild/standard:5.0',
+        'computeType': 'BUILD_GENERAL1_SMALL',
+    },
+    serviceRole='arn:aws:iam::123456789012:role/codebuild-service-role'
+)
 
-  build:
-    commands:
-      - echo Building the Docker image...
-      - docker build -t $REPOSITORY_URI:$IMAGE_TAG .
-
-  post_build:
-    commands:
-      - echo Pushing the Docker image to ECR...
-      - docker push $REPOSITORY_URI:$IMAGE_TAG
-      - echo Writing image definitions file...
-      - printf '[{"name":"my-container","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
-
-artifacts:
-  files:
-    - imagedefinitions.json
+print("Project Created:", response['project']['name'])
