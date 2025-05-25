@@ -6,7 +6,7 @@ response = codebuild.create_project(
     name='SimpleBuildProject',
     source={
         'type': 'GITHUB',
-        'location': 'https://github.com/your-username/your-repo',
+        'location': 'https://github.com/abhaykoka/AWS_Codebuild',
     },
     artifacts={
         'type': 'NO_ARTIFACTS'
