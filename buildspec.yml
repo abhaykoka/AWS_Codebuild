@@ -1,4 +1,4 @@
-version: 0.2
+tversion: 0.2
 
 phases:
   install:
@@ -9,7 +9,7 @@ phases:
   build:
     commands:
       - echo "Running Python script..."
-      - python hello.py
+      - python convert.py
   post_build:
     commands:
       - echo "Build completed successfully!"
