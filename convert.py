@@ -16,7 +16,7 @@ response = codebuild.create_project(
         'image': 'aws/codebuild/standard:5.0',
         'computeType': 'BUILD_GENERAL1_SMALL',
     },
-    serviceRole='arn:aws:iam::123456789012:role/codebuild-service-role'
+    serviceRole='arn:aws:iam::026090542550:role/codebuild-service-role'
 )
 
 print("Project Created:", response['project']['name'])
