@@ -1,15 +1,27 @@
-tversion: 0.2
+version: 0.2
+
+env:
+  variables:
+    AWS_REGION: us-east-1
+    REPOSITORY_URI: 123456789012.dkr.ecr.us-east-1.amazonaws.com/my-repo
 
 phases:
-  install:
-    runtime-versions:
-      python: 3.8
+  pre_build:
     commands:
-      - echo "Installing dependencies..."
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $REPOSITORY_URI
+      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - echo Image tag: $IMAGE_TAG
   build:
     commands:
-      - echo "Running Python script..."
-      - python convert.py
+      - echo Building the Docker image...
+      - docker build -t $REPOSITORY_URI:$IMAGE_TAG .
   post_build:
     commands:
-      - echo "Build completed successfully!"
+      - echo Pushing the Docker image to ECR...
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - echo Writing image definitions file...
+      - printf '[{"name":"my-container","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+artifacts:
+  files:
+    - imagedefinitions.json
