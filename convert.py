@@ -1,3 +1,5 @@
+print(f"This is my codebuild practice")
+'''
 import boto3
 
 codebuild = boto3.client('codebuild')
@@ -20,3 +22,4 @@ response = codebuild.create_project(
 )
 
 print("Project Created:", response['project']['name'])
+'''
