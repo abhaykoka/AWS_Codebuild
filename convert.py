@@ -1,16 +1,22 @@
-import markdown
-import sys
-from pathlib import Path
+import boto3
 
-def convert_md_to_html(md_file, html_file):
-    with open(md_file, 'r') as f:
-        text = f.read()
-    html = markdown.markdown(text)
-    with open(html_file, 'w') as f:
-        f.write(html)
+codebuild = boto3.client('codebuild')
 
-if __name__ == "__main__":
-    md_file = sys.argv[1] if len(sys.argv) > 1 else "sample.md"
-    html_file = "output.html"
-    convert_md_to_html(md_file, html_file)
-    print(f"Converted '{md_file}' to '{html_file}'")
+response = codebuild.create_project(
+    name='SimpleBuildProject',
+    source={
+        'type': 'GITHUB',
+        'location': 'https://github.com/your-username/your-repo',
+    },
+    artifacts={
+        'type': 'NO_ARTIFACTS'
+    },
+    environment={
+        'type': 'LINUX_CONTAINER',
+        'image': 'aws/codebuild/standard:5.0',
+        'computeType': 'BUILD_GENERAL1_SMALL',
+    },
+    serviceRole='arn:aws:iam::123456789012:role/codebuild-service-role'
+)
+
+print("Project Created:", response['project']['name'])
